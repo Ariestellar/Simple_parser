@@ -14,15 +14,7 @@ $urlSuite='https://freelansim.ru';
 //Connection to DB
 $db= new DB (DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 
-//Get param from CLI
-if(isset($argv[1])){
-  $action = $argv[1];
-  echo $action;
-  exit;
-}else{
-  echo 'No action';
-  exit;
-}
+
 
 /*
 *@param $url
@@ -55,7 +47,7 @@ function getArticlesLinksFromCatalog($url){
       $article_url = $db->escape($urlSuite.$link_to_article->href);
       $sql= "INSERT ignore INTO Task SET     url ='{$article_url}'";
       $db->query($sql);
-      getTask($urlSuite.$link_to_article->href);
+      //getTask($urlSuite.$link_to_article->href);
     }
       if($next_link = $html->find('div.pagination a[rel=next]',0)){
         getArticlesLinksFromCatalog($next_link->href);
@@ -75,5 +67,27 @@ function getArticlesLinksFromCatalog($url){
   }
 }
 
-getArticlesLinksFromCatalog($urlSuite);
+
+//Get param from CLI
+if(isset($argv[1])){
+  $action = $argv[1];
+  echo $action;
+  //exit;
+}else{
+  echo 'No action';
+  exit;
+}
+//Just get links to task
+if($action == 'catalog'){
+  getArticlesLinksFromCatalog($urlSuite);
+}elseif($action == 'task'){
+  while($task = $db->query('SELECT url FROM Task WHERE date_parsed = "NULL"')){
+    var_dump($task);
+    exit;
+    //getTask($task[0]['url']);
+  }
+}
+
+
+//getArticlesLinksFromCatalog($urlSuite);
 ?>
