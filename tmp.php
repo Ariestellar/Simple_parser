@@ -20,11 +20,16 @@ $db= new DB (DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
 */
 
 function getTask($url){
+  global $db;
   $task=file_get_html($url);
-  $headline=$task->find('h2',0)->innertext;
-  $desTask=$task->find('div.task__description',0)->innertext;
+  $headline=$db->escape($task->find('h2',0)->innertext);
+  $desTask=$db->escape($task->find('div.task__description',0)->innertext);
   $data = array('headline'=>$headline,
                 'desTask'=>$desTask);
+
+
+  $sql="UPDATE Task SET headline='{$headline}', descTasc='{$desTask}', date_parsed = NOW() WHERE url='{$url}'";
+  $db->query($sql);
   return $data;
 }
 /*
@@ -39,18 +44,17 @@ function getArticlesLinksFromCatalog($url,$urlSuite){
     $html = file_get_html($url);
     //find метод который по заданному селектору ищет элементы к примеру по классу(все ссылки с таким классом)
     foreach ($html->find('div.task__title a') as $link_to_article) {//"div a" находит вложенный a
-      //echo $urlSuite.$link_to_article->href."<br>"; // выведем href атрибут куда ведет эта ссылка и добавим перевод строки
-      echo $urlSuite.$link_to_article->href."<br>";
-      //$link_to_article=$urlSuite.$link_to_article;
 
-      print_r(getTask($urlSuite.$link_to_article->href));
+      echo $urlSuite.$link_to_article->href."<br>";
+      //print_r(getTask($urlSuite.$link_to_article->href));
       //Экранирование
       $article_url = $db->escape($urlSuite.$link_to_article->href);
       //Добавление ссылок в базу данных на задачу
       //в таблицу Task колонка url = 'ссылка'
-      //     ВСТАВИТЬ В  Task ЗАДАТЬ url = ссылка
-      $sql= "INSERT INTO Task SET     url ='{$article_url}'";
+      //     ВСТАВИТЬ В  Task ЗАДАТЬ url = ссылка (ignore - для предотвращения поппытки вставки существующий url, в индексе должнобыть unix)
+      $sql= "INSERT ignore INTO Task SET     url ='{$article_url}'";
       $db->query($sql);
+      getTask($urlSuite.$link_to_article->href);
 
     }
       //Рекурсия
