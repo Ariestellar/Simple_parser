@@ -5,6 +5,19 @@ require_once "./simple_html_dom.php";
 //URL for parsing
 $urlSuite='https://freelansim.ru';
 /*
+*@param $url
+*@return $data
+*/
+
+function getTask($url){
+  $task=file_get_html($url);
+  $headline=$task->find('h2',0)->innertext;
+  $desTask=$task->find('div.task__description',0)->innertext;
+  $data = array('headline'=>$headline,
+                'desTask'=>$desTask);
+  return $data;
+}
+/*
 *@param $url,$urlSuite
 */
 function getArticlesLinksFromCatalog($url,$urlSuite){
@@ -16,6 +29,7 @@ function getArticlesLinksFromCatalog($url,$urlSuite){
     //find метод который по заданному селектору ищет элементы к примеру по классу(все ссылки с таким классом)
     foreach ($html->find('div.task__title a') as $link_to_article) {//"div a" находит вложенный a
       echo $urlSuite.$link_to_article->href."<br>"; // выведем href атрибут куда ведет эта ссылка и добавим перевод строки
+      print_r(getTask($urlSuite.$link_to_article->href));
     }
       //Рекурсия
       if($next_link = $html->find('div.pagination a[rel=next]',0)){
@@ -32,6 +46,7 @@ function getArticlesLinksFromCatalog($url,$urlSuite){
     //find метод который по заданному селектору ищет элементы к примеру по классу(все ссылки с таким классом)
     foreach ($html->find('div.task__title a') as $link_to_article) {//"div a" находит вложенный a
       echo $urlSuite.$link_to_article->href."<br>"; // выведем href атрибут куда ведет эта ссылка и добавим перевод строки
+      //echo getTask($urlSuite.$link_to_article->href);
     }
     //Рекурсия
     //Если есть хоть один элемент в блоке тега <div> с классом pagination в теге <a> с атрибутом [rel] равному next то делаем рекурсию
