@@ -1,9 +1,19 @@
 <?php
+//DB Credentials
+define('DB_HOST','localhost');
+define('DB_USER','mysql');
+define('DB_PASSWORD','mysql');
+define('DB_NAME','parser');
+
 //Lib for parsing
 require_once "./simple_html_dom.php";
+require_once "./db.class.php";
 
 //URL for parsing
 $urlSuite='https://freelansim.ru';
+//Connection to DB
+$db= new DB (DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
+
 /*
 *@param $url
 *@return $data
@@ -21,6 +31,7 @@ function getTask($url){
 *@param $url,$urlSuite
 */
 function getArticlesLinksFromCatalog($url,$urlSuite){
+  global $db;//для того что бы была доступна в ф-ии
   if($url == $urlSuite){
     echo $url."<br>";
     //Get page
@@ -28,8 +39,19 @@ function getArticlesLinksFromCatalog($url,$urlSuite){
     $html = file_get_html($url);
     //find метод который по заданному селектору ищет элементы к примеру по классу(все ссылки с таким классом)
     foreach ($html->find('div.task__title a') as $link_to_article) {//"div a" находит вложенный a
-      echo $urlSuite.$link_to_article->href."<br>"; // выведем href атрибут куда ведет эта ссылка и добавим перевод строки
+      //echo $urlSuite.$link_to_article->href."<br>"; // выведем href атрибут куда ведет эта ссылка и добавим перевод строки
+      echo $urlSuite.$link_to_article->href."<br>";
+      //$link_to_article=$urlSuite.$link_to_article;
+
       print_r(getTask($urlSuite.$link_to_article->href));
+      //Экранирование
+      $article_url = $db->escape($urlSuite.$link_to_article->href);
+      //Добавление ссылок в базу данных на задачу
+      //в таблицу Task колонка url = 'ссылка'
+      //     ВСТАВИТЬ В  Task ЗАДАТЬ url = ссылка
+      $sql= "INSERT INTO Task SET     url ='{$article_url}'";
+      $db->query($sql);
+
     }
       //Рекурсия
       if($next_link = $html->find('div.pagination a[rel=next]',0)){
