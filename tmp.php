@@ -82,6 +82,13 @@ function getArticlesLinksFromCatalog($url,$urlSuite){
   }
 }
 
+
+/*while($task = $db->query('SELECT url FROM task WHERE date_parsed is null limit 1')){
+  $r = mysqli_fetch_row($task);
+  getTask($r[0]);
+}
+}*/
+
 getArticlesLinksFromCatalog($urlSuite,$urlSuite);
 // innertext свойство библиотеки возвращает html код
 //print_r($html->innertext);

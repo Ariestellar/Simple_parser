@@ -1,4 +1,7 @@
 <?php
+//Rows per block
+define('PER_BLOCK','10');
+
 //DB Credentials
 define('DB_HOST','localhost');
 define('DB_USER','mysql');
@@ -13,8 +16,6 @@ require_once "/db.class.php";
 $urlSuite='https://freelansim.ru';
 //Connection to DB
 $db= new DB (DB_HOST,DB_USER,DB_PASSWORD,DB_NAME);
-
-
 
 /*
 *@param $url
@@ -68,6 +69,7 @@ function getArticlesLinksFromCatalog($url){
 }
 
 
+
 //Get param from CLI
 if(isset($argv[1])){
   $action = $argv[1];
@@ -77,30 +79,35 @@ if(isset($argv[1])){
   echo 'No action';
   exit;
 }
+
+
+
+
+
 //Just get links to task
 if($action == 'catalog'){
   getArticlesLinksFromCatalog($urlSuite);
 }elseif($action == 'task'){
-  while($task = $db->query('SELECT url FROM task WHERE date_parsed is null limit 1')){
-    //$row = mysqli_fetch_assoc($task);
-    //var_dump($row['url']);
-    $r = mysqli_fetch_row($task);
-    getTask($r[0]);
 
-    //echo $r[0];
-    //exit;
 
-  }
-  /*$result = $db->query('SELECT url FROM task WHERE date_parsed is null limit 1');
-  while ($row = mysqli_fetch_assoc($result)) {
-        echo $row['url'].'<br>';
-      }
-      $r = mysqli_fetch_row($result);
-      echo $r[0];
-      echo result[0]['url'];*/
+  $tmp_uniq= md5(uniqid().time());
+  //echo $tmp_uniq;
+  $db->query("UPDATE task SET tmp_uniq = '{$tmp_uniq}' WHERE tmp_uniq is null limit 10");
+
+  while(true){
+    $task = $db->query("SELECT url FROM task WHERE tmp_uniq = '{$tmp_uniq}'");
+    $x = mysqli_fetch_assoc($task);
+    var_dump($x);
+    /*if(!$x){
+      echo "All done";
+      exit;
+    }
+    foreach ($x as $task) {
+      getTask($task);
+    }
+  }*/
+
+
 
 }
-
-
-//getArticlesLinksFromCatalog($urlSuite);
 ?>
