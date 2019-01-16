@@ -81,11 +81,24 @@ if(isset($argv[1])){
 if($action == 'catalog'){
   getArticlesLinksFromCatalog($urlSuite);
 }elseif($action == 'task'){
-  while($task = $db->query('SELECT url FROM Task WHERE date_parsed = "NULL"')){
-    var_dump($task);
-    exit;
-    //getTask($task[0]['url']);
+  while($task = $db->query('SELECT url FROM task WHERE date_parsed is null limit 1')){
+    //$row = mysqli_fetch_assoc($task);
+    //var_dump($row['url']);
+    $r = mysqli_fetch_row($task);
+    getTask($r[0]);
+
+    //echo $r[0];
+    //exit;
+
   }
+  /*$result = $db->query('SELECT url FROM task WHERE date_parsed is null limit 1');
+  while ($row = mysqli_fetch_assoc($result)) {
+        echo $row['url'].'<br>';
+      }
+      $r = mysqli_fetch_row($result);
+      echo $r[0];
+      echo result[0]['url'];*/
+
 }
 
 
