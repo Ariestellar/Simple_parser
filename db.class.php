@@ -11,6 +11,7 @@ class DB{
     if(mysqli_connect_error()){
       throw new Exception('Could not connect to DB');
     }
+    
   }
 
   //выполняем запросы
