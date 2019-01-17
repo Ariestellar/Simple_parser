@@ -80,10 +80,6 @@ if(isset($argv[1])){
   exit;
 }
 
-
-
-
-
 //Just get links to task
 if($action == 'catalog'){
   getArticlesLinksFromCatalog($urlSuite);
@@ -96,18 +92,16 @@ if($action == 'catalog'){
 
   while(true){
     $task = $db->query("SELECT url FROM task WHERE tmp_uniq = '{$tmp_uniq}'");
-    $x = mysqli_fetch_assoc($task);
-    var_dump($x);
+    $x = mysqli_fetch_row($task);
+    var_dump($task);
+    exit;
     /*if(!$x){
       echo "All done";
       exit;
     }
     foreach ($x as $task) {
       getTask($task);
-    }
-  }*/
-
-
-
+    }*/
+  }
 }
 ?>
