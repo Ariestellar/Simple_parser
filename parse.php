@@ -39,16 +39,14 @@ function getArticlesLinksFromCatalog($url){
   global $db;
   global $urlSuite;
   if($url == $urlSuite){
-
-    echo $url."<br>";
-    //Get page
+    echo $url;
+    //Get page to BD
     $html = file_get_html($url);
     foreach ($html->find('div.task__title a') as $link_to_article) {
-      echo $urlSuite.$link_to_article->href."<br>";
+      echo $urlSuite.$link_to_article->href;
       $article_url = $db->escape($urlSuite.$link_to_article->href);
-      $sql= "INSERT ignore INTO Task SET     url ='{$article_url}'";
+      $sql= "INSERT ignore INTO Task SET url ='{$article_url}'";
       $db->query($sql);
-      //getTask($urlSuite.$link_to_article->href);
     }
       if($next_link = $html->find('div.pagination a[rel=next]',0)){
         getArticlesLinksFromCatalog($next_link->href);
@@ -56,31 +54,33 @@ function getArticlesLinksFromCatalog($url){
 
   }else{
     $url=$urlSuite.$url;
-    echo "<br>".$url."<br><br>";
-    //Get page
+    echo $url;
+    //Get page to BD
     $html = file_get_html($url);
     foreach ($html->find('div.task__title a') as $link_to_article) {
-      echo $urlSuite.$link_to_article->href."<br>";
+      echo $urlSuite.$link_to_article->href;
+      $article_url = $db->escape($urlSuite.$link_to_article->href);
+      $sql= "INSERT ignore INTO Task SET url ='{$article_url}'";
+      $db->query($sql);
     }
     if($next_link = $html->find('div.pagination a[rel=next]',0)){
       getArticlesLinksFromCatalog($next_link->href);
+    }else{
+      echo "All done";
+      exit;
     }
   }
 }
-
-
 
 //Get param from CLI
 if(isset($argv[1])){
   $action = $argv[1];
   echo $action;
-  //exit;
 }else{
   echo 'No action';
   exit;
 }
-//php W:\domains\myproject.loc\Simple_parser\parse.php task
-//UPDATE `task` SET `headline`=null,`descTasc`=null,`date_parsed`=null,`tmp_uniq`=null
+
 //Just get links to task
 if($action == 'catalog'){
   getArticlesLinksFromCatalog($urlSuite);
@@ -89,8 +89,7 @@ if($action == 'catalog'){
     $tmp_uniq= md5(uniqid().time());
     $db->query("UPDATE task SET tmp_uniq = '{$tmp_uniq}' WHERE tmp_uniq is null limit 10");
     $task = $db->query("SELECT url FROM task WHERE tmp_uniq = '{$tmp_uniq}' and headline is null ");
-    echo ($task->num_rows);
-    //exit;
+    
     if($task->num_rows==0){
       echo "All done";
       exit;
@@ -100,10 +99,6 @@ if($action == 'catalog'){
            getTask($x['url']);
       }
     }
-
-
-
   }
-
 }
 ?>

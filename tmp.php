@@ -92,4 +92,30 @@ function getArticlesLinksFromCatalog($url,$urlSuite){
 getArticlesLinksFromCatalog($urlSuite,$urlSuite);
 // innertext свойство библиотеки возвращает html код
 //print_r($html->innertext);
+
+//W:\modules\php\PHP-7.2-x64\php.exe W:\domains\myproject.loc\Simple_parser\parse.php
+//php W:\domains\myproject.loc\Simple_parser\parse.php task
+//UPDATE `task` SET `headline`=null,`descTasc`=null,`date_parsed`=null,`tmp_uniq`=null
+//Just get links to task
+/*if($action == 'catalog'){
+  getArticlesLinksFromCatalog($urlSuite);
+}elseif($action == 'task'){
+  while(true){
+    $tmp_uniq= md5(uniqid().time());
+    $db->query("UPDATE task SET tmp_uniq = '{$tmp_uniq}' WHERE tmp_uniq is null limit 10");
+    $task = $db->query("SELECT url FROM task WHERE tmp_uniq = '{$tmp_uniq}' and headline is null ");
+    echo ($task->num_rows);
+    //exit;
+    if($task->num_rows==0){
+      echo "All done";
+      exit;
+    }else{
+      while ($x=$task->fetch_assoc()){
+           echo $x['url'];
+           getTask($x['url']);
+      }
+    }
+  }
+}*/
+
 ?>
