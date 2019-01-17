@@ -1,6 +1,6 @@
 <?php
 //Rows per block
-define('PER_BLOCK','10');
+//define('PER_BLOCK','10');
 
 //DB Credentials
 define('DB_HOST','localhost');
@@ -9,8 +9,8 @@ define('DB_PASSWORD','mysql');
 define('DB_NAME','parser');
 
 //Lib for parsing
-require_once "/simple_html_dom.php";
-require_once "/db.class.php";
+require_once "simple_html_dom.php";
+require_once "db.class.php";
 
 //URL for parsing
 $urlSuite='https://freelansim.ru';
@@ -79,29 +79,31 @@ if(isset($argv[1])){
   echo 'No action';
   exit;
 }
-
+//php W:\domains\myproject.loc\Simple_parser\parse.php task
+//UPDATE `task` SET `headline`=null,`descTasc`=null,`date_parsed`=null,`tmp_uniq`=null
 //Just get links to task
 if($action == 'catalog'){
   getArticlesLinksFromCatalog($urlSuite);
 }elseif($action == 'task'){
-
-
-  $tmp_uniq= md5(uniqid().time());
-  //echo $tmp_uniq;
-  $db->query("UPDATE task SET tmp_uniq = '{$tmp_uniq}' WHERE tmp_uniq is null limit 10");
-
   while(true){
-    $task = $db->query("SELECT url FROM task WHERE tmp_uniq = '{$tmp_uniq}'");
-    $x = mysqli_fetch_row($task);
-    var_dump($task);
-    exit;
-    /*if(!$x){
+    $tmp_uniq= md5(uniqid().time());
+    $db->query("UPDATE task SET tmp_uniq = '{$tmp_uniq}' WHERE tmp_uniq is null limit 10");
+    $task = $db->query("SELECT url FROM task WHERE tmp_uniq = '{$tmp_uniq}' and headline is null ");
+    echo ($task->num_rows);
+    //exit;
+    if($task->num_rows==0){
       echo "All done";
       exit;
+    }else{
+      while ($x=$task->fetch_assoc()){
+           echo $x['url'];
+           getTask($x['url']);
+      }
     }
-    foreach ($x as $task) {
-      getTask($task);
-    }*/
+
+
+
   }
+
 }
 ?>
