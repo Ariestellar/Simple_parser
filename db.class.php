@@ -11,7 +11,7 @@ class DB{
     if(mysqli_connect_error()){
       throw new Exception('Could not connect to DB');
     }
-    
+
   }
 
   //выполняем запросы
@@ -25,10 +25,6 @@ class DB{
       if(mysqli_error($this->connection)){
         throw new Exception(mysqli_error($this->connection));
       }
-
-      /*if(is_bool($result)){
-        return $result;
-      }*/
       return $result;
     }
 
